@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101262787572",
+    "project_id": "deck-cycle",
+    "storage_bucket": "deck-cycle.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101262787572:android:55c9ca5cf0f5210aae6fa1",
+        "android_client_info": {
+          "package_name": "com.example.deckcycle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaGQKGh_xJpRi2lHTI4dPY6N9dwN83aVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

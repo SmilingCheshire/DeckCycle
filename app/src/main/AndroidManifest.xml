@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.DeckCycle"
+        tools:targetApi="31">
+        <activity
+            android:name=".view.EditDeck"
+            android:exported="true" /> <!-- Ensure all activity names match their class files -->
+        <activity
+            android:name=".view.AddDeck"
+            android:exported="true"
+            android:label="@string/title_activity_add_deck"
+            android:theme="@style/Theme.DeckCycle.NoActionBar" />
+        <activity
+            android:name=".view.ModeSelection"
+            android:exported="true" />
+        <activity
+            android:name=".view.LogIn"
+            android:exported="true" />
+        <activity
+            android:name=".view.Lobby"
+            android:exported="true" />
+        <activity
+            android:name=".view.Registration"
+            android:exported="true" />
+        <activity
+            android:name=".view.StartingWindow"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
