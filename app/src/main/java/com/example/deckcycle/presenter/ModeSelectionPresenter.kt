@@ -1,10 +1,15 @@
 package com.example.deckcycle.presenter
 
 class ModeSelectionPresenter {
-    fun startMode(mode: String, callback: (String) -> Unit) {
-        callback("Starting $mode Mode!")
+
+    fun startMode(mode: String, deckId: Long?, callback: (String) -> Unit) {
+        if (deckId == null) {
+            callback("Error: Invalid deck!")
+            return
+        }
     }
 }
+
 
 interface ModeSelectionView {
     fun navigateToFlipMode()
