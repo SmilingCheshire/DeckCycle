@@ -13,6 +13,12 @@
         android:theme="@style/Theme.DeckCycle"
         tools:targetApi="31">
         <activity
+            android:name=".view.QuizResults"
+            android:exported="true" />
+        <activity
+            android:name=".view.QuizMode"
+            android:exported="true" />
+        <activity
             android:name=".view.FlipMode"
             android:exported="true" />
         <activity

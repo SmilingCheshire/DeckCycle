@@ -36,7 +36,7 @@ class ModeSelection : AppCompatActivity() {
         }
 
         btnQuizMode.setOnClickListener {
-            //startModeActivity(QuizMode::class.java)
+            startModeActivity(QuizMode::class.java)
         }
 
         btnWriteMode.setOnClickListener {
