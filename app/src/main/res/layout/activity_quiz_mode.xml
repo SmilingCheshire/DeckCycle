@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <!-- Header Text -->
+    <TextView
+        android:id="@+id/tv_word"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Word"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Options Container -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        android:layout_marginBottom="32dp">
+
+        <!-- Option 1 -->
+        <TextView
+            android:id="@+id/et_option1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:hint="Option 1"
+            android:padding="8dp"
+            android:layout_margin="8dp"/>
+
+        <!-- Option 2 -->
+        <TextView
+            android:id="@+id/et_option2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:hint="Option 2"
+            android:padding="8dp"
+            android:layout_margin="8dp"/>
+
+        <!-- Option 3 -->
+        <TextView
+            android:id="@+id/et_option3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:hint="Option 3"
+            android:padding="8dp"
+            android:layout_margin="8dp"/>
+
+        <!-- Option 4 -->
+        <TextView
+            android:id="@+id/et_option4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:hint="Option 4"
+            android:padding="8dp"
+            android:layout_margin="8dp"/>
+
+    </GridLayout>
+
+    <!-- Home Button -->
+    <Button
+        android:id="@+id/homeButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="HOME"
+        android:textAllCaps="true"
+        android:backgroundTint="#8000FF"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

@@ -40,7 +40,7 @@ class ModeSelection : AppCompatActivity() {
         }
 
         btnWriteMode.setOnClickListener {
-            //startModeActivity(WriteMode::class.java)
+            startModeActivity(WriteMode::class.java)
         }
 
         btnStats.setOnClickListener {

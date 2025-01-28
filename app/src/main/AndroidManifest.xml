@@ -13,6 +13,9 @@
         android:theme="@style/Theme.DeckCycle"
         tools:targetApi="31">
         <activity
+            android:name=".view.WriteMode"
+            android:exported="false" />
+        <activity
             android:name=".view.QuizResults"
             android:exported="true" />
         <activity
