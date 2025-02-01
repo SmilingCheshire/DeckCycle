@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.deckcycle.R
 import com.example.deckcycle.presenter.StartingWindowPresenter
 import com.example.deckcycle.presenter.StartingWindowView
+import com.example.deckcycle.util.NotificationHelper
 
 class StartingWindow : AppCompatActivity(), StartingWindowView {
     private lateinit var presenter: StartingWindowPresenter
@@ -20,8 +21,15 @@ class StartingWindow : AppCompatActivity(), StartingWindowView {
         val loginButton = findViewById<Button>(R.id.loginButton)
         val registerButton = findViewById<Button>(R.id.registerButton)
 
-        loginButton.setOnClickListener { presenter.onLoginButtonClicked() }
-        registerButton.setOnClickListener { presenter.onRegisterButtonClicked() }
+        loginButton.setOnClickListener {
+            NotificationHelper.showInstantNotification(this) // Show notification immediately
+            presenter.onLoginButtonClicked()
+        }
+
+        registerButton.setOnClickListener {
+            NotificationHelper.showInstantNotification(this) // Show notification immediately
+            presenter.onRegisterButtonClicked()
+        }
     }
 
     override fun navigateToLogin() {
