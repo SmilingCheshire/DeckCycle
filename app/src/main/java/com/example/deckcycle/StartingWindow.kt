@@ -1,6 +1,7 @@
 package com.example.deckcycle.view
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,10 @@ class StartingWindow : AppCompatActivity(), StartingWindowView {
 
         val loginButton = findViewById<Button>(R.id.loginButton)
         val registerButton = findViewById<Button>(R.id.registerButton)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+        }
 
         loginButton.setOnClickListener {
             NotificationHelper.showInstantNotification(this) // Show notification immediately

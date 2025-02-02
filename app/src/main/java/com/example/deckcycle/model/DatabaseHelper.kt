@@ -247,7 +247,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     fun updateLastStudied(deckId: Long) {
         ensureStatsEntry(deckId)
         val db = writableDatabase
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())  // Only date displayed
         val dateStr = dateFormat.format(Date())
         val values = ContentValues().apply {
             put(COLUMN_STATS_LAST_STUDIED, dateStr)

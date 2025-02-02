@@ -4,6 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 
 object NotificationHelper {
@@ -11,6 +12,7 @@ object NotificationHelper {
     private const val CHANNEL_ID = "learning_reminder"
     private const val NOTIFICATION_ID = 100
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun showInstantNotification(context: Context) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -35,5 +37,18 @@ object NotificationHelper {
             .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)
+
+        val existingChannel = notificationManager.getNotificationChannel(CHANNEL_ID)
+        if (existingChannel == null) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Instant Notification",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Channel for instant notifications"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
     }
 }
