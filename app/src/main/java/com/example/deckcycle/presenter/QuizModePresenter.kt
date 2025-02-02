@@ -4,14 +4,17 @@ import android.content.Intent
 import com.example.deckcycle.model.DatabaseHelper
 import com.example.deckcycle.view.Lobby
 import com.example.deckcycle.view.QuizMode
-
+/**
+ * Presenter responsible for managing the Quiz mode logic.
+ * It handles the flow of the quiz, including loading words from the deck, displaying options, and tracking the user's answers.
+ */
 class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelper) {
 
     private var deckId: Long = -1
-    private val availableWords = mutableListOf<Pair<String, String>>()
-    private val usedWords = mutableSetOf<String>()
-    private var currentWord: Pair<String, String>? = null
-    private val startTime = System.currentTimeMillis()
+    private val availableWords = mutableListOf<Pair<String, String>>() // List of word pairs (word1, word2)
+    private val usedWords = mutableSetOf<String>() // Set of words that have been used as the first word in pairs
+    private var currentWord: Pair<String, String>? = null // Current word pair being shown in the quiz
+    private val startTime = System.currentTimeMillis() // Time when the quiz started
 
     // Counters for correct and wrong answers
     private var correctAnswersCount = 0
@@ -20,6 +23,12 @@ class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelp
     // List of incorrectly answered words with correct pairs
     private val wrongWordsList = mutableListOf<Pair<String, String>>()
 
+    /**
+     * Starts the quiz by initializing necessary data.
+     * It loads all words for the selected deck, marks the session as studied, and starts the quiz by loading the first word.
+     *
+     * @param deckId The ID of the deck to be used in the quiz.
+     */
     fun startQuiz(deckId: Long) {
         this.deckId = deckId
         availableWords.addAll(db.getWordsInDeck(deckId)) // Load all words from the deck
@@ -28,7 +37,11 @@ class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelp
         db.incrementStudySession(deckId)
         loadNextWord()
     }
-
+    /**
+     * Loads the next word pair for the quiz.
+     * It filters out words that have already been used and randomly selects a new word pair, displaying it to the user.
+     * If all words have been used, it ends the quiz.
+     */
     fun loadNextWord() {
         if (availableWords.isEmpty()) {
             view.showEndOfQuizMessage(correctAnswersCount, wrongAnswersCount, wrongWordsList)
@@ -57,7 +70,12 @@ class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelp
             view.displayWord(word.first, options)
         }
     }
-
+    /**
+     * Called when the user selects an option during the quiz.
+     * It checks if the selected option is correct and updates the score and statistics accordingly.
+     *
+     * @param selectedOption The option selected by the user.
+     */
     fun onOptionSelected(selectedOption: String) {
         currentWord?.let { word ->
             val correctAnswer = word.second
@@ -84,7 +102,10 @@ class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelp
         val timeSpent = timeSpentMillis / (1000 ) // Convert to minutes
         db.updateTimeSpent(deckId, timeSpent)
     }
-
+    /**
+     * Called when the home button is clicked.
+     * It navigates the user back to the Lobby screen.
+     */
     fun onHomeClicked() {
         val intent = Intent(view, Lobby::class.java)
         view.startActivity(intent)

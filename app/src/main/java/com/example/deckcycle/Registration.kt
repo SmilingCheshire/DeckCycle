@@ -10,6 +10,11 @@ import com.example.deckcycle.R
 import com.example.deckcycle.presenter.RegistrationPresenter
 import com.example.deckcycle.presenter.RegistrationView
 
+/**
+ * The Registration activity handles user registration, where users can enter
+ * their username, email, password, and confirm password to create a new account.
+ * It validates the inputs and communicates with the presenter to handle the registration logic.
+ */
 class Registration : AppCompatActivity(), RegistrationView {
 
     private lateinit var presenter: RegistrationPresenter
@@ -18,6 +23,13 @@ class Registration : AppCompatActivity(), RegistrationView {
     private lateinit var etRepeatPassword: EditText
     private lateinit var etUsername: EditText
 
+    /**
+     * Called when the activity is created. Initializes the views, sets up the button listeners,
+     * and invokes the presenter to handle user registration when the register button is clicked.
+     * It also handles the navigation to the login screen if the user already has an account.
+     *
+     * @param savedInstanceState The saved instance state, if any.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
@@ -46,10 +58,18 @@ class Registration : AppCompatActivity(), RegistrationView {
         }
     }
 
+    /**
+     * Shows an error message in a Toast when the registration fails or when the input is invalid.
+     *
+     * @param message The error message to be displayed.
+     */
     override fun showError(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Navigates to the Lobby activity after a successful registration.
+     */
     override fun navigateToLobby() {
         val intent = Intent(this, Lobby::class.java)
         startActivity(intent)

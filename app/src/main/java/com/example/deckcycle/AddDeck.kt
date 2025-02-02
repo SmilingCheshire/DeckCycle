@@ -11,24 +11,36 @@ import com.example.deckcycle.R
 import com.example.deckcycle.presenter.AddDeckPresenter
 import com.example.deckcycle.presenter.AddDeckView
 
+/**
+ * Activity that allows users to create a new deck by adding word pairs.
+ * It provides functionality for adding word fields dynamically and saving the deck.
+ *
+ * @see AddDeckPresenter The presenter that handles the business logic for saving the deck.
+ */
 class AddDeck : AppCompatActivity(), AddDeckView {
 
     private lateinit var presenter: AddDeckPresenter
     private lateinit var dynamicContainer: LinearLayout
     private lateinit var deckNameField: EditText // For the deck name
 
+    /**
+     * Called when the activity is created. Sets up the UI and handles button clicks.
+     *
+     * @param savedInstanceState The saved instance state, if any.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_deck)
 
+        // Initialize the presenter and view components
         presenter = AddDeckPresenter(this, this)
         dynamicContainer = findViewById(R.id.dynamicContainer)
-        deckNameField = findViewById(R.id.deckName) // Add a field for deck name in your layout
+        deckNameField = findViewById(R.id.deckName)
 
         val btnToAddWord = findViewById<Button>(R.id.addWord)
         val btnSaveDeck = findViewById<Button>(R.id.saveDeck)
 
-        // Add new word fields dynamically
+        // Add new word fields dynamically when the button is clicked
         btnToAddWord.setOnClickListener {
             addWordFields()
         }
@@ -38,6 +50,7 @@ class AddDeck : AppCompatActivity(), AddDeckView {
             saveDeck()
         }
 
+        // Navigate to the Lobby when the button is clicked
         val btnToLobby = findViewById<Button>(R.id.Lobby)
         btnToLobby.setOnClickListener {
             val intent = Intent(this, Lobby::class.java)
@@ -45,6 +58,9 @@ class AddDeck : AppCompatActivity(), AddDeckView {
         }
     }
 
+    /**
+     * Adds input fields for a new word pair (word in two languages) to the UI dynamically.
+     */
     private fun addWordFields() {
         val word1Field = EditText(this).apply {
             hint = "Word in Language 1"
@@ -53,11 +69,14 @@ class AddDeck : AppCompatActivity(), AddDeckView {
             hint = "Word in Language 2"
         }
 
-        // Add the fields to the container
+        // Add the fields to the dynamic container (LinearLayout)
         dynamicContainer.addView(word1Field)
         dynamicContainer.addView(word2Field)
     }
 
+    /**
+     * Collects the deck name and word pairs from the UI and passes them to the presenter for saving.
+     */
     private fun saveDeck() {
         val wordPairs = mutableListOf<Pair<String, String>>()
 
@@ -69,7 +88,7 @@ class AddDeck : AppCompatActivity(), AddDeckView {
             return
         }
 
-        // Loop through the dynamicContainer to find word pairs
+        // Loop through the dynamic container to collect word pairs from the UI
         var i = 0
         while (i < dynamicContainer.childCount) {
             val word1Field = dynamicContainer.getChildAt(i) as? EditText
@@ -84,13 +103,20 @@ class AddDeck : AppCompatActivity(), AddDeckView {
                     wordPairs.add(word1 to word2)
                 }
             }
-            i += 2 // Move to the next pair
+            i += 2 // Move to the next pair of fields
         }
 
-        // Call presenter to handle the deck name and word pairs
+        // Call the presenter to handle saving the deck
         presenter.saveDeck(deckName, wordPairs)
     }
 
+    /**
+     * Updates the UI by adding a pre-populated word pair to the dynamic container.
+     * This is called when a word pair is added via the presenter.
+     *
+     * @param word1 The first word in the pair.
+     * @param word2 The second word in the pair.
+     */
     override fun addWordToUI(word1: String, word2: String) {
         val word1View = EditText(this).apply {
             setText(word1) // Prepopulate with the word
@@ -103,13 +129,22 @@ class AddDeck : AppCompatActivity(), AddDeckView {
         dynamicContainer.addView(word2View)
     }
 
+    /**
+     * Displays a success message and navigates to the Lobby when the deck is saved.
+     */
     override fun onDeckSaved() {
         Toast.makeText(this, "Deck Saved!", Toast.LENGTH_SHORT).show()
-        // Optionally, navigate back to the Lobby or clear inputs
+        // Navigate to the Lobby after saving the deck
         val intent = Intent(this, Lobby::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Handles failure when saving the deck. The error message is provided but not currently implemented.
+     *
+     * @param error A string containing the error message.
+     */
     override fun onSaveFailure(error: String) {
+        // Optionally, show an error message or log the failure
     }
 }

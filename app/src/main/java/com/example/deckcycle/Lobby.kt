@@ -11,11 +11,23 @@ import com.example.deckcycle.model.DatabaseHelper
 import com.example.deckcycle.presenter.LobbyPresenter
 import com.example.deckcycle.presenter.LobbyView
 
+/**
+ * The Lobby activity represents the main screen where the user can view all available decks,
+ * add a new deck, and edit or select existing decks to play with.
+ *
+ * @see LobbyPresenter The presenter that handles the logic of loading and refreshing deck data.
+ */
 class Lobby : AppCompatActivity(), LobbyView {
 
     private lateinit var presenter: LobbyPresenter
     private lateinit var dynamicContainer: LinearLayout
 
+    /**
+     * Called when the activity is created. This method initializes the views, sets up the necessary listeners,
+     * and loads the list of available decks from the presenter.
+     *
+     * @param savedInstanceState The saved instance state, if any.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lobby)
@@ -23,6 +35,7 @@ class Lobby : AppCompatActivity(), LobbyView {
         dynamicContainer = findViewById(R.id.dynamicContainer)
         val btnToAddDeck = findViewById<Button>(R.id.addDeck)
 
+        // Initialize the presenter and load the decks
         presenter = LobbyPresenter(this, this)
         presenter.loadDecks()
 
@@ -33,6 +46,12 @@ class Lobby : AppCompatActivity(), LobbyView {
         }
     }
 
+    /**
+     * Refreshes the list of decks displayed in the lobby by dynamically creating UI elements
+     * for each deck and adding them to the `dynamicContainer`.
+     *
+     * @param decks A list of deck names to display in the lobby.
+     */
     override fun refreshDeckList(decks: List<String>) {
         dynamicContainer.removeAllViews()
 
@@ -84,14 +103,25 @@ class Lobby : AppCompatActivity(), LobbyView {
         }
     }
 
+    /**
+     * Retrieves the deck ID associated with a given deck name from the database.
+     *
+     * @param deckName The name of the deck.
+     * @return The ID of the deck, or null if no deck with the given name exists.
+     */
     private fun getDeckIdByName(deckName: String): Long? {
         val dbHelper = DatabaseHelper(this)
         val decks = dbHelper.getAllDecks()
         return decks.find { it.second == deckName }?.first
     }
 
+    /**
+     * Called when the activity is resumed. This method reloads the list of decks to ensure that
+     * any updates made to the decks are reflected in the UI.
+     */
     override fun onResume() {
         super.onResume()
         presenter.loadDecks() // Reload decks to fetch updated names
     }
 }
+

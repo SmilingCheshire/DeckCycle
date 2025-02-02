@@ -13,6 +13,12 @@ import com.example.deckcycle.R
 import com.example.deckcycle.model.DatabaseHelper
 import com.example.deckcycle.presenter.QuizModePresenter
 
+/**
+ * The QuizMode activity handles the quiz functionality for a selected deck.
+ * It presents a word to the user with multiple options and allows them to select the correct option.
+ * The activity tracks the number of correct and incorrect answers, shows the result after each selection,
+ * and presents the final results at the end of the quiz.
+ */
 class QuizMode : AppCompatActivity() {
 
     private lateinit var presenter: QuizModePresenter
@@ -21,6 +27,13 @@ class QuizMode : AppCompatActivity() {
     private lateinit var homeButton: Button
     private var deckId: Long? = null
 
+    /**
+     * Called when the activity is created. This method retrieves the deckId from the intent,
+     * initializes the presenter and UI components, sets up listeners for the option buttons,
+     * and starts the quiz with the selected deck.
+     *
+     * @param savedInstanceState The saved instance state, if any.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz_mode)
@@ -65,6 +78,12 @@ class QuizMode : AppCompatActivity() {
         }
     }
 
+    /**
+     * Displays the current word and its options for the user to select.
+     *
+     * @param word The word to be displayed.
+     * @param options The list of options to be shown as possible answers.
+     */
     fun displayWord(word: String, options: List<String>) {
         wordTextView.text = word
         optionButtons.forEachIndexed { index, button ->
@@ -73,6 +92,15 @@ class QuizMode : AppCompatActivity() {
         }
     }
 
+    /**
+     * Displays the result of the user's selection after they choose an option.
+     * The selected button is highlighted with green for correct answers or red for incorrect answers.
+     * The correct answer, if not selected, is also shown in green.
+     *
+     * @param isCorrect True if the selected option is correct, false otherwise.
+     * @param button The button that was selected by the user.
+     * @param correctAnswer The correct answer for the current word.
+     */
     fun showResult(isCorrect: Boolean, button: TextView?, correctAnswer: String) {
         button?.setBackgroundColor(if (isCorrect) Color.GREEN else Color.RED)
 
@@ -86,6 +114,14 @@ class QuizMode : AppCompatActivity() {
         }, 500)
     }
 
+    /**
+     * Shows the final results after the quiz ends. This includes the number of correct and incorrect answers,
+     * and the list of incorrectly answered word pairs.
+     *
+     * @param correctCount The number of correct answers.
+     * @param wrongCount The number of incorrect answers.
+     * @param wrongWords The list of word pairs that were answered incorrectly.
+     */
     fun showEndOfQuizMessage(
         correctCount: Int,
         wrongCount: Int,
@@ -101,3 +137,4 @@ class QuizMode : AppCompatActivity() {
         finish() // Exit this activity
     }
 }
+
