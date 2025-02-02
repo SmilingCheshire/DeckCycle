@@ -10,12 +10,18 @@ class WriteModePresenter(private val databaseHelper: DatabaseHelper) {
     private var words = mutableListOf<Pair<String, String>>()
     private var remainingWords = mutableListOf<Pair<String, String>>()
     private var currentIndex = 0
+    private var deckId: Long = -1
+    private val startTime = System.currentTimeMillis()
+
 
     fun attachView(view: WriteModeView) {
         this.view = view
     }
 
     fun loadWords(deckId: Long) {
+        this.deckId = deckId
+        databaseHelper.incrementStudySession(deckId)
+        databaseHelper.updateLastStudied(deckId)
         words = databaseHelper.getWordsInDeck(deckId).toMutableList()
         remainingWords = words.toMutableList()
         if (remainingWords.isNotEmpty()) {
@@ -28,12 +34,13 @@ class WriteModePresenter(private val databaseHelper: DatabaseHelper) {
 
     fun checkAnswer(answer: String) {
         if (remainingWords.isEmpty()) return
-
         val currentWord = remainingWords[currentIndex]
 
         if (currentWord.second.equals(answer, ignoreCase = true)) {
             view?.highlightAnswer(true)
             remainingWords.removeAt(currentIndex)
+            databaseHelper.incrementWrittenCorrect(deckId)
+            databaseHelper.updateStats(deckId, true)
 
             if (remainingWords.isEmpty()) {
                 view?.showMessage("Mode Completed!")
@@ -47,7 +54,13 @@ class WriteModePresenter(private val databaseHelper: DatabaseHelper) {
         } else {
             view?.highlightAnswer(false)
             view?.showCorrectAnswer(currentWord.second)
+            databaseHelper.incrementWrittenWrong(deckId)
+            databaseHelper.updateStats(deckId, false)
         }
+
+        val timeSpentMillis  = System.currentTimeMillis() - startTime // Duration in milliseconds
+        val timeSpent = timeSpentMillis / (1000 ) // Convert to minutes
+        databaseHelper.updateTimeSpent(deckId, timeSpent)
     }
 
     fun nextWord() {
@@ -73,4 +86,5 @@ class WriteModePresenter(private val databaseHelper: DatabaseHelper) {
         fun showMessage(message: String)
         fun navigateToHome()
     }
+
 }

@@ -44,7 +44,7 @@ class ModeSelection : AppCompatActivity() {
         }
 
         btnStats.setOnClickListener {
-            //startModeActivity(Stats::class.java)
+            startModeActivity(StatsActivity::class.java)
         }
     }
 

@@ -61,4 +61,5 @@ class FlipMode : AppCompatActivity() {
         wordTextView.text = word
         imageView.setImageResource(imageResId)
     }
+
 }

@@ -14,6 +14,7 @@ class FlipModePresenter(
     private val wordFrequency = mutableMapOf<String, Int>() // Word to frequency map
     private var currentWordIndex: Int = -1
     private var showingWord: Boolean = true
+    private val startTime = System.currentTimeMillis()
 
     init {
         loadWordsFromDatabase()
@@ -23,11 +24,14 @@ class FlipModePresenter(
         // Fetch words for the given deckId
         val words = databaseHelper.getWordsInDeck(deckId)
         wordPairs.addAll(words)
+        databaseHelper.incrementStudySession(deckId)
 
         // Initialize word frequency map
         wordPairs.forEach { (word1, _) ->
             wordFrequency[word1] = 1
         }
+        // Record last studied
+        databaseHelper.updateLastStudied(deckId)
     }
 
     fun nextWord() {
@@ -79,6 +83,7 @@ class FlipModePresenter(
 
         val currentWord = wordPairs[currentWordIndex].first
         wordFrequency[currentWord] = (wordFrequency[currentWord] ?: 1) + 4
+        databaseHelper.incrementWordsRepeated(deckId)
     }
 
     fun flipPair() {
@@ -87,6 +92,7 @@ class FlipModePresenter(
         // Toggle between showing word1 and word2
         showingWord = !showingWord
         updateView()
+        databaseHelper.incrementWordsFlipped(deckId)
     }
 
     private fun updateView() {
@@ -97,5 +103,8 @@ class FlipModePresenter(
 
         // Update only the text while keeping the image as-is
         (context as FlipMode).updateWord(wordToShow, 0) // Pass 0 to avoid changing the image
+        val timeSpentMillis  = System.currentTimeMillis() - startTime // Duration in milliseconds
+        val timeSpent = timeSpentMillis / (1000 ) // Convert to minutes
+        databaseHelper.updateTimeSpent(deckId, timeSpent)
     }
 }

@@ -11,6 +11,7 @@ class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelp
     private val availableWords = mutableListOf<Pair<String, String>>()
     private val usedWords = mutableSetOf<String>()
     private var currentWord: Pair<String, String>? = null
+    private val startTime = System.currentTimeMillis()
 
     // Counters for correct and wrong answers
     private var correctAnswersCount = 0
@@ -22,6 +23,9 @@ class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelp
     fun startQuiz(deckId: Long) {
         this.deckId = deckId
         availableWords.addAll(db.getWordsInDeck(deckId)) // Load all words from the deck
+        // Record last studied
+        db.updateLastStudied(deckId)
+        db.incrementStudySession(deckId)
         loadNextWord()
     }
 
@@ -67,15 +71,23 @@ class QuizModePresenter(private val view: QuizMode, private val db: DatabaseHelp
             if (isCorrect) {
                 correctAnswersCount++
                 availableWords.remove(word)
+                db.incrementQuizCorrect(deckId)
+                db.updateStats(deckId, true)
             } else {
                 wrongAnswersCount++
                 wrongWordsList.add(word) // Add to wrong answers list
+                db.incrementQuizWrong(deckId)
+                db.updateStats(deckId, false)
             }
         }
+        val timeSpentMillis  = System.currentTimeMillis() - startTime // Duration in milliseconds
+        val timeSpent = timeSpentMillis / (1000 ) // Convert to minutes
+        db.updateTimeSpent(deckId, timeSpent)
     }
 
     fun onHomeClicked() {
         val intent = Intent(view, Lobby::class.java)
         view.startActivity(intent)
     }
+
 }

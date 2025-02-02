@@ -1,62 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.deckcycle.view.ModeSelection">
 
-    <Button
-        android:id="@+id/FlipMode"
-        android:layout_width="181dp"
-        android:layout_height="173dp"
-        android:layout_marginStart="26dp"
-        android:layout_marginTop="266dp"
-        android:text="Flip Mode"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <Button
-        android:id="@+id/QuizMode"
-        android:layout_width="181dp"
-        android:layout_height="173dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="264dp"
-        android:text="Quiz Mode"
-        app:layout_constraintStart_toEndOf="@+id/FlipMode"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/WriteMode"
-        android:layout_width="181dp"
-        android:layout_height="173dp"
-        android:layout_marginStart="26dp"
-        android:text="Write Mode"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FlipMode" />
-
-
-    <Button
-        android:id="@+id/Stats"
-        android:layout_width="181dp"
-        android:layout_height="173dp"
-        android:layout_marginStart="4dp"
-        android:text="Stats"
-        app:layout_constraintStart_toEndOf="@+id/WriteMode"
-        app:layout_constraintTop_toBottomOf="@+id/QuizMode" />
-
-    <Button
-        android:id="@+id/Lobby"
+    <!-- Top Guideline (For top buttons closer to center) -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="155dp"
-        android:layout_marginTop="54dp"
-        android:layout_marginEnd="162dp"
-        android:text="Home"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.38" />
+
+    <!-- Bottom Guideline (For bottom buttons closer to center) -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottomGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_percent="0.62" />
+
+    <!-- Flip Mode Button (Top-Left) -->
+    <Button
+        android:id="@+id/FlipMode"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Flip Mode"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintEnd_toStartOf="@id/QuizMode"
+        app:layout_constraintBottom_toTopOf="@id/WriteMode"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/WriteMode" />
+        app:layout_constraintTop_toTopOf="@id/topGuideline"
+        app:layout_constraintHorizontal_bias="0.45"/>
+
+    <!-- Quiz Mode Button (Top-Right) -->
+    <Button
+        android:id="@+id/QuizMode"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Quiz Mode"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintStart_toEndOf="@id/FlipMode"
+        app:layout_constraintBottom_toTopOf="@id/Stats"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/topGuideline"
+        app:layout_constraintHorizontal_bias="0.55"/>
+
+    <!-- Write Mode Button (Bottom-Left) -->
+    <Button
+        android:id="@+id/WriteMode"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Write Mode"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintEnd_toStartOf="@id/Stats"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/bottomGuideline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.45"/>
+
+    <!-- Stats Button (Bottom-Right) -->
+    <Button
+        android:id="@+id/Stats"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="Stats"
+        app:layout_constraintWidth_percent="0.45"
+        app:layout_constraintHeight_percent="0.25"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/WriteMode"
+        app:layout_constraintTop_toTopOf="@id/bottomGuideline"
+        app:layout_constraintHorizontal_bias="0.55" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
