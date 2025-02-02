@@ -6,52 +6,58 @@ import com.example.deckcycle.model.DatabaseHelper
 import com.example.deckcycle.view.FlipMode
 
 /**
- * Presenter class for managing the logic of flipping words in a deck.
- * The class handles word display, flipping between words, and tracking word frequencies.
- * It also interacts with the database to update word statistics and track time spent.
+ * The FlipModePresenter class is responsible for managing the logic and flow of the Flip Mode in a flashcard application.
+ * It handles loading word pairs from the database, determining the next word to display, and tracking word repetition
+ * and flipping activities.
  *
- * @param deckId The ID of the deck whose words are being managed.
- * @param context The context used to initialize the presenter, which is required for interacting with UI components and the database.
+ * This presenter works closely with the `FlipMode` view to update the UI and interact with the local database to track
+ * study progress.
+ *
+ * @param deckId The ID of the deck currently being studied.
+ * @param context The context for accessing resources and UI elements. This should be an instance of `FlipMode`.
  */
 class FlipModePresenter(
     private val deckId: Long,
     private val context: Context
 ) {
     private val databaseHelper = DatabaseHelper(context)
-    private val wordPairs = mutableListOf<Pair<String, String>>() // Pair of words (word1, word2)
-    private val wordFrequency = mutableMapOf<String, Int>() // Word to frequency map
-    private var currentWordIndex: Int = -1
-    private var showingWord: Boolean = true
-    private val startTime = System.currentTimeMillis()
+    private val wordPairs = mutableListOf<Pair<String, String>>() // List of word pairs (word1, word2)
+    private val wordFrequency = mutableMapOf<String, Int>() // Map to track word frequency during repetition
+    private var currentWordIndex: Int = -1 // Index of the currently displayed word pair
+    private var showingWord: Boolean = true // Track whether we are showing the first or second word in the pair
+    private val startTime = System.currentTimeMillis() // Track the time since the start of the session
 
-    /**
-     * Initializes the FlipModePresenter by loading words from the database.
-     * It also increments the study session count and records the last studied time.
-     */
+    private val seenWords = mutableSetOf<String>() // Set of words that have been shown already
+    private val repeatedWords = mutableSetOf<String>() // Set of words marked for repetition
+
+    private val maxFrequency = 3 // Maximum frequency boost for a word
+    private val defaultFrequency = 1 // Default frequency for words
+
     init {
         loadWordsFromDatabase()
     }
 
     /**
-     * Loads the words from the database for the given deckId and initializes
-     * the word frequency map. Also increments the study session and updates the last studied time.
+     * Loads words from the database into the presenter.
+     * This method populates `wordPairs` with words and initializes the frequency map.
+     * It also increments the study session and updates the last studied timestamp.
      */
     private fun loadWordsFromDatabase() {
-        // Fetch words for the given deckId
         val words = databaseHelper.getWordsInDeck(deckId)
         wordPairs.addAll(words)
         databaseHelper.incrementStudySession(deckId)
 
-        // Initialize word frequency map
         wordPairs.forEach { (word1, _) ->
-            wordFrequency[word1] = 1
+            wordFrequency[word1] = defaultFrequency
         }
-        // Record last studied
+
         databaseHelper.updateLastStudied(deckId)
     }
+
     /**
-     * Moves to the next word in the deck, randomly selecting from the word pool.
-     * It ensures buttons are disabled during the operation and re-enables them afterward.
+     * Fetches the next word to be displayed in the flip mode.
+     * The method ensures that the next word is either a new word or a word marked for repetition.
+     * Once a word is selected, it updates the UI through the `FlipMode` view.
      */
     fun nextWord() {
         if (wordPairs.isEmpty()) {
@@ -59,69 +65,78 @@ class FlipModePresenter(
             return
         }
 
-        // Disable buttons to avoid rapid clicks
+        // Disable buttons temporarily
         (context as FlipMode).apply {
             homeButton.isEnabled = false
             repeatButton.isEnabled = false
             nextButton.isEnabled = false
         }
 
-        // Perform the operation
         try {
-            val wordPool = wordPairs.flatMap { pair ->
-                List(wordFrequency[pair.first] ?: 1) { pair }
+            // Filter available words (either not seen yet or marked for repetition)
+            val availableWords = wordPairs.filter { it.first !in seenWords || it.first in repeatedWords }
+
+            if (availableWords.isEmpty()) {
+                seenWords.clear() // Reset seen words when all have been seen
+                nextWord()
+                return
             }
+
+            // Select next word based on frequency
+            val wordPool = availableWords.flatMap { pair ->
+                val frequency = wordFrequency[pair.first] ?: defaultFrequency
+                List(frequency) { pair }
+            }
+
             val nextPair = wordPool.random()
             currentWordIndex = wordPairs.indexOf(nextPair)
             showingWord = true
+            seenWords.add(nextPair.first) // Mark word as seen
             updateView()
         } catch (e: Exception) {
             Toast.makeText(context, "Error loading next word: ${e.message}", Toast.LENGTH_SHORT).show()
         } finally {
-            // Re-enable buttons after operation
+            // Re-enable buttons after operation is complete
             (context as FlipMode).apply {
                 homeButton.isEnabled = true
                 repeatButton.isEnabled = true
                 nextButton.isEnabled = true
             }
         }
-
-        // Choose a word randomly, with adjusted frequency
-        val wordPool = wordPairs.flatMap { pair ->
-            List(wordFrequency[pair.first] ?: 1) { pair }
-        }
-
-        val nextPair = wordPool.random()
-        currentWordIndex = wordPairs.indexOf(nextPair)
-        showingWord = true
-        updateView()
     }
+
     /**
-     * Repeats the current word by incrementing its frequency.
-     * Also updates the database to reflect the number of times the word has been repeated.
+     * Marks the current word for repetition and increases its frequency.
+     * The word will be shown more frequently in the future based on its frequency.
      */
     fun repeatWord() {
         if (currentWordIndex == -1) return
 
         val currentWord = wordPairs[currentWordIndex].first
-        wordFrequency[currentWord] = (wordFrequency[currentWord] ?: 1) + 4
+
+        // Increase word frequency, but cap it to `maxFrequency`
+        val newFrequency = (wordFrequency[currentWord] ?: defaultFrequency) + 2
+        wordFrequency[currentWord] = newFrequency.coerceAtMost(maxFrequency)
+
+        repeatedWords.add(currentWord) // Mark word for repetition
         databaseHelper.incrementWordsRepeated(deckId)
     }
+
     /**
-     * Flips the current word pair, toggling between showing the first word and the second word.
-     * Updates the UI and increments the count of flipped words in the database.
+     * Flips the current word pair (shows either the word or its translation).
+     * This method toggles between showing the first and second word in the pair.
      */
     fun flipPair() {
         if (currentWordIndex == -1) return
 
-        // Toggle between showing word1 and word2
         showingWord = !showingWord
         updateView()
         databaseHelper.incrementWordsFlipped(deckId)
     }
+
     /**
-     * Updates the view with the current word (either word1 or word2, based on the state of `showingWord`).
-     * Also updates the time spent on studying the deck in the database.
+     * Updates the view with the current word or translation.
+     * It also tracks the time spent in the current session and updates it in the database.
      */
     private fun updateView() {
         if (currentWordIndex == -1) return
@@ -129,10 +144,9 @@ class FlipModePresenter(
         val pair = wordPairs[currentWordIndex]
         val wordToShow = if (showingWord) pair.first else pair.second
 
-        // Update only the text while keeping the image as-is
-        (context as FlipMode).updateWord(wordToShow, 0) // Pass 0 to avoid changing the image
-        val timeSpentMillis  = System.currentTimeMillis() - startTime // Duration in milliseconds
-        val timeSpent = timeSpentMillis / (1000 ) // Convert to minutes
-        databaseHelper.updateTimeSpent(deckId, timeSpent)
+        (context as FlipMode).updateWord(wordToShow, 0) // Update the UI with the current word
+        val timeSpentMillis = System.currentTimeMillis() - startTime
+        val timeSpent = timeSpentMillis / 1000
+        databaseHelper.updateTimeSpent(deckId, timeSpent) // Update the time spent in the session
     }
 }
